@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("29238f30fa4d","root","admin","db1");
+$conn = new mysqli("20fade5e5888","root","admin","db1");
 
 // Check connection
 if ($mysqli -> connect_errno) {
