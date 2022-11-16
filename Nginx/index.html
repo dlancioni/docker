@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<script src="js/api.js"></script>  
+<script src="js/api.js"></script>
 
 <head>
     <div id="head"></div>
 </head>
 
-<body>
+<body onload="load()">
 
     <div class="container">
         <div id="menu"></div>
-        <div id="search"></div>        
+        <div id="search"></div>
+        <div id="main"></div>
     </div>
 
-  <script>
-      addComponent("head.html", "head")
-      addComponent("menu.html", "menu")
-      addComponent("search.html", "search")
-  </script>
+    <script>
+        function load() 
+        {
+            // Page structure            
+            addComponent("head.html", "head")
+            addComponent("main.html", "main")        
+            // Data
+            addComponent("menu_top.html", "menu_top")
+            addComponent("menu_left.html", "menu_left")
+        }
+    </script>
 
 </body>
 </html>
