@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  php:
+      build: .
+      container_name: php
+      ports:
+        - '80:80'
+      volumes:
+        - ./html:/var/www/html
+      depends_on:
+        - db
+      links:
+        - db  
+  db:
+      image: mysql:latest
+      ports: 
+        - "3306:3306"
+      environment:
+        - MYSQL_ROOT_HOST=localhost
+        - MYSQL_ROOT_PASSWORD=admin
+        - MYSQL_USER=david
+        - MYSQL_PASSWORD=david
+        - MYSQL_DATABASE=db1
+      volumes:
+        - type: bind
+          source: /c/temp/mysql/mysql8
+          target: /var/lib/mysql/
+      container_name: mysql8
