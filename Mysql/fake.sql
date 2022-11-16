@@ -45,29 +45,30 @@ begin
 
     WHILE i <= number_of_clients DO
 
-		INSERT INTO tb_entity ( entity_type_id, name, birth ) VALUES ( fn_random_int(1, 3) , CONCAT('Name ', i), fn_random_date(100, 200) );
+		INSERT INTO tb_entity ( ENTITY_TYPE_ID, NAME, BIRTH ) VALUES ( fn_random_int(1, 3) , CONCAT('Name ', i), fn_random_date(100, 200) );
         SET entity_id = LAST_INSERT_ID();
 
-        INSERT INTO tb_entity_login ( entity_id, username, password ) VALUES ( entity_id, CONCAT('username', entity_id), CONCAT('password', entity_id) );
+        INSERT INTO tb_entity_login ( ENTITY_ID, USERNAME, PASSWORD ) VALUES ( entity_id, CONCAT('username', entity_id), CONCAT('password', entity_id) );
  
         SET j = 1;
         SET count = fn_random_INT(1, 4);
         WHILE j <= count do
-            INSERT INTO tb_address ( entity_id, address_type_id, street, number, complement, city, state ) VALUES ( entity_id, fn_random_INT(1, 3) , CONCAT('Street ', j), fn_random_INT(100, 100), CONCAT('Complement ', j), CONCAT('City ', j), 'SP' );
+            INSERT INTO tb_entity_address ( ENTITY_ID, ADDRESS_TYPE_ID, STREET, NUMBER, COMPLEMENT, CITY, STATE ) VALUES ( entity_id, fn_random_INT(1, 3) , CONCAT('Street ', j), fn_random_INT(100, 100), CONCAT('Complement ', j), CONCAT('City ', j), 'SP' );
             SET j = j + 1;
         END WHILE;
 
         SET j = 1;
         SET count = 4;
         WHILE j <= count do
-            INSERT INTO tb_entity_document ( entity_id, document_id, number ) VALUES ( entity_id, fn_random_INT(1, 5) , fn_random_INT(100000000, 200000000) );
+            INSERT INTO tb_entity_document ( ENTITY_ID, DOCUMENT_ID, NUMBER ) VALUES ( entity_id, fn_random_INT(1, 5) , fn_random_INT(100000000, 200000000) );
             SET j = j + 1;
         END WHILE;        
 
         SET i = i + 1;
+
     END WHILE;
 
-    commit;
+    COMMIT;
 
 END$$
 DELIMITER ;
