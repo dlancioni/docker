@@ -1,10 +1,10 @@
 /*
 David lancioni - 11/23
 Generate random number
-call sp_fake(10)
-SELECT * from tb_entity
+call sp_fake(1000)
+SELECT * from tb_person
 */
-USE ecommerce;
+USE entity;
 DROP FUNCTION IF EXISTS fn_random_int;
 DROP FUNCTION IF EXISTS fn_random_date;
 DROP PROCEDURE if exists sp_fake;
@@ -32,35 +32,34 @@ END$$
 
 CREATE PROCEDURE sp_fake(IN number_of_clients INT)
 begin
-
+   
     DECLARE count INT DEFAULT 0;
     DECLARE i INT DEFAULT 1;
     DECLARE j INT DEFAULT 1;
-    DECLARE entity_id INT DEFAULT 0;
-
-	DELETE FROM tb_entity_document;
-	DELETE FROM tb_entity_login;
-    DELETE FROM tb_address;
-	DELETE FROM tb_entity;
+    DECLARE person_id INT DEFAULT 0;
+    
+    SET FOREIGN_KEY_CHECKS = 0;
+    
+	TRUNCATE tb_person_document;
+    TRUNCATE tb_address;
+	TRUNCATE tb_person;
 
     WHILE i <= number_of_clients DO
 
-		INSERT INTO tb_entity ( ENTITY_TYPE_ID, NAME, BIRTH ) VALUES ( fn_random_int(1, 3) , CONCAT('Name ', i), fn_random_date(100, 200) );
-        SET entity_id = LAST_INSERT_ID();
-
-        INSERT INTO tb_entity_login ( ENTITY_ID, USERNAME, PASSWORD ) VALUES ( entity_id, CONCAT('username', entity_id), CONCAT('password', entity_id) );
+		INSERT INTO tb_person (category_id, type_id, name, birth) VALUES (fn_random_int(1, 4), fn_random_int(1, 3), CONCAT('Name ', i), fn_random_date(100, 200));
+        SET person_id = LAST_INSERT_ID();
  
         SET j = 1;
         SET count = fn_random_INT(1, 4);
         WHILE j <= count do
-            INSERT INTO tb_entity_address ( ENTITY_ID, ADDRESS_TYPE_ID, STREET, NUMBER, COMPLEMENT, CITY, STATE ) VALUES ( entity_id, fn_random_INT(1, 3) , CONCAT('Street ', j), fn_random_INT(100, 100), CONCAT('Complement ', j), CONCAT('City ', j), 'SP' );
+            INSERT INTO tb_address (person_id, address_type_id, street, number, complement, city, state_id) VALUES ( person_id, fn_random_INT(1, 3) , CONCAT('Street ', j), fn_random_INT(100, 100), CONCAT('Complement ', j), CONCAT('City ', j), fn_random_INT(1, 5));
             SET j = j + 1;
         END WHILE;
 
         SET j = 1;
         SET count = 4;
         WHILE j <= count do
-            INSERT INTO tb_entity_document ( ENTITY_ID, DOCUMENT_ID, NUMBER ) VALUES ( entity_id, fn_random_INT(1, 5) , fn_random_INT(100000000, 200000000) );
+            INSERT INTO tb_person_document (person_id, document_id, number ) VALUES (person_id, fn_random_INT(1, 5) , fn_random_INT(100000000, 200000000));
             SET j = j + 1;
         END WHILE;        
 
@@ -69,6 +68,7 @@ begin
     END WHILE;
 
     COMMIT;
-
+    
+    SET FOREIGN_KEY_CHECKS = 1;
 END$$
 DELIMITER ;
