@@ -2,16 +2,15 @@
 delete from tb_person;
 select * from tb_person;
 call sp_tb_person('I', null, 1, 1, 'Name 2', '2022-12-31', @sid, @msg);
-call sp_tb_person('U', 8, 1, 1, 'Name 1', '2022-02-15', @sid, @msg);
-call sp_tb_person('D', 9, null, null, null, null, @sid, @msg);
-call sp_tb_person('S', 10, null, null, null, null, @sid, @msg);
+call sp_tb_person('U', 1, 1, 1, 'Name 1', '2021-01-01', @sid, @msg);
+call sp_tb_person('D', 2, null, null, null, null, @sid, @msg);
+call sp_tb_person('S', 1, null, null, null, null, @sid, @msg);
 call sp_tb_person('S', null, null, null, null, null, @sid, @msg);
 
-call sp_tb_person('I', null, 1, 1, 'Name 2', '2022-12-31', @sid, @msg);
+call sp_tb_person('I', null, 9, 1, 'Name 2', '2022-12-31', @sid, @msg);
 select @sid, @msg
 
 */
-
 USE ecommerce;
 
 DELIMITER $$
@@ -35,10 +34,15 @@ sp: BEGIN
 
 	SET sid = 0;
 	SET msg = '';
+    
+	IF p_action NOT IN ('I', 'U', 'D', 'S') THEN
+        SELECT fn_get_message(1, '', '', '') INTO msg;
+		LEAVE sp;
+    END IF;
 
 	IF p_action = 'U' OR p_action = 'D' THEN
 		IF p_id IS NULL OR p_id = 0 THEN
-			SET msg = 'Campo ID é obrigatório';
+			SELECT fn_get_message(2, 'tb_person', 'id', '', '') INTO msg;
 			LEAVE sp;
 		END IF;
     END IF;
@@ -46,24 +50,23 @@ sp: BEGIN
 	IF p_action = 'I' OR p_action = 'U' THEN
     
 		-- Mandatory
-		IF p_type_id IS NULL OR p_type_id = 0 THEN    
-			SET msg = 'Campo tipo é obrigatório';
+		IF p_type_id IS NULL OR p_type_id = 0 THEN
+			SELECT fn_get_message(2, 'tb_person', 'type_id', '', '') INTO msg;
 			LEAVE sp;
 		END IF;
 
 		-- Field size
-		IF length(p_name) > 1 THEN
-			SET msg = 'Campo nome maior que limite (50)';
+		IF length(p_name) > 50 THEN
+			SELECT fn_get_message(4, 'tb_person', 'name', '', '') INTO msg;
 			LEAVE sp;
 		END IF;
-        
+       
 		-- Foreign keys		
 		SELECT id FROM tb_person_type WHERE id = p_type_id;
         IF FOUND_ROWS() = 0 THEN
-			SET msg = 'Tipo de pessoa não existe no cadastro de tipos de pessoa';
-			LEAVE sp;        
-        END IF;
-		
+			SELECT fn_get_message(3, 'tb_person', 'type_id', 'tb_person_type', 'id') INTO msg;
+			LEAVE sp;
+        END IF;		
 
 	END IF;    
 
