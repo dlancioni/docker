@@ -1,7 +1,7 @@
 /*
 SELECT SPLIT("1, 'David Lancioni', 100.22", ',', 3) as third;
 */
-
+DROP FUNCTION IF EXISTS fn_split;
 CREATE FUNCTION fn_split(
   x VARCHAR(255),
   delim VARCHAR(12),
