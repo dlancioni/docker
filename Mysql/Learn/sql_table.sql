@@ -1,14 +1,13 @@
 
-SELECT DISTINCT
-t2.ORDINAL_POSITION,
-t1.TABLE_NAME,
-t2.COLUMN_NAME,
-t2.DATA_TYPE,
-IFNULL(t2.CHARACTER_MAXIMUM_LENGTH, 0) NUMERIC_PRECISION,
-t2.IS_NULLABLE
-FROM INFORMATION_SCHEMA.TABLES t1
-INNER JOIN INFORMATION_SCHEMA.COLUMNS t2 on 
-	t1.TABLE_NAME = t2.TABLE_NAME AND t1.TABLE_SCHEMA = t2.TABLE_SCHEMA
-WHERE t1.table_schema = 'person'
-AND t1.table_name LIKE 'tb_person'
-ORDER BY t2.ORDINAL_POSITION
+SELECT
+t1.table_name,
+t2.column_name,
+t2.data_type,
+IFNULL(t2.character_maximum_length, 0) numeric_precision,
+t2.is_nullable
+FROM information_schema.tables t1
+INNER JOIN information_schema.columns t2 ON
+t1.table_name = t2.table_name and t1.table_schema = t2.table_schema
+WHERE t1.table_schema = 'ecommerce'
+AND t1.table_name = 'tb_person'
+ORDER BY t2.ordinal_position
