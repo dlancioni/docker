@@ -3,15 +3,14 @@ delete from tb_person;
 select * from tb_person;
 --
 call sp_table('I', 'tb_person', '0, 1, 1, David Lancioni, 1979-02-15', @p_st, @p_msg, @p_id);
-call sp_table('I', 'tb_person', '0, 1, 1, Renata Caramelli, 1979-02-15', @p_st, @p_msg, @p_id);
-call sp_table('U', 'tb_person', '22, 1, 1, David C Lancioni, 1979-02-01', @p_st, @p_msg, @p_id);
-call sp_table('D', 'tb_person', '23', @p_st, @p_msg, @p_id);
-call sp_table('S', 'tb_person', '', @p_st, @p_msg, @p_id);
-call sp_table('S', 'tb_person', '22', @p_st, @p_msg, @p_id);
---
-call sp_table('I', 'tb_person', '99, 1, 1, ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd , 1979-02-15', @p_st, @p_msg, @p_id);
 select @p_st, @p_msg, @p_id
 
+call sp_table('U', 'tb_person', '22, 1, 1, David C Lancioni, 1979-02-01', @p_st, @p_msg, @p_id);
+select @p_st, @p_msg, @p_id
+
+call sp_table('D', 'tb_person', '19, 1, 1, David C Lancioni, 1979-02-01', @p_st, @p_msg, @p_id);
+select @p_st, @p_msg, @p_id
+--
 */
 USE ecommerce;
 
@@ -36,6 +35,10 @@ sp: BEGIN
 	DECLARE C_VALIDATION_MANDATORY_FIELD INT DEFAULT 2;
     DECLARE C_VALIDATION_RECORD_NOT_FOUND_UPDATE_DELETE INT DEFAULT 3;
     DECLARE C_VALIDATION_SIZE_LIMIT INT DEFAULT 4;
+    
+    DECLARE C_SUCCESS_INSERT INT DEFAULT 10;
+    DECLARE C_SUCCESS_UPDATE INT DEFAULT 11;
+    DECLARE C_SUCCESS_DELETE INT DEFAULT 12;
 
     DECLARE v_table_name varchar(100) DEFAULT "";
     DECLARE v_field_name varchar(100) DEFAULT "";
@@ -50,7 +53,6 @@ sp: BEGIN
     DECLARE v_fields VARCHAR(500) DEFAULT '';
     DECLARE v_values VARCHAR(500) DEFAULT '';
 
-    DECLARE v_select VARCHAR(500) DEFAULT '';
     DECLARE v_insert VARCHAR(500) DEFAULT '';
     DECLARE v_update VARCHAR(500) DEFAULT '';
     DECLARE v_delete VARCHAR(500) DEFAULT '';
@@ -74,11 +76,12 @@ sp: BEGIN
 
 	DECLARE CONTINUE HANDLER FOR NOT FOUND SET finished = 1;
 	OPEN cursor_table;
+	select FOUND_ROWS() into v_row_count;    
     
     SET p_st = 0;
     SET p_msg  = '';
 	SET p_id = 0;
-    
+
     -- Validate the action
 	IF p_action NOT IN ('I', 'U', 'D', 'S') THEN
         SELECT fn_get_message(C_VALIDATION_VALID_ACTION, '', '', '', '', '') INTO p_msg;
@@ -86,30 +89,24 @@ sp: BEGIN
     END IF;
 
     -- Validate Id (mandatory for update or delete)
-	IF p_action IN ('U', 'D') THEN
-    
-		SET v_id = fn_split(p_values, ',', 1);
-        
+	IF p_action IN ('U', 'D') THEN   
+		SET v_id = fn_split(p_values, ',', 1);        
 		IF v_id = '' OR v_id = '0' or v_id IS NULL THEN
 			SELECT fn_get_message(C_VALIDATION_MANDATORY_FIELD, p_table_name, 'id', '', '', '') INTO p_msg;
 			LEAVE sp;
-		END IF;
-        
+		END IF;        
 		SET @SQL = concat('SELECT * FROM ', p_table_name, ' WHERE id = ', v_id);
 		PREPARE stmt FROM @SQL;
 		EXECUTE stmt;
-		DEALLOCATE PREPARE stmt;
-        
+		DEALLOCATE PREPARE stmt;        
         IF FOUND_ROWS() = 0 THEN
             SET p_id = v_id;        
 			SELECT fn_get_message(C_VALIDATION_RECORD_NOT_FOUND_UPDATE_DELETE, p_table_name, 'id', p_table_name, 'id', v_id) INTO p_msg;
 			LEAVE sp;
-        END IF;
-        
+        END IF;        
     END IF;
 
 	SET v_id = fn_split(p_values, ',', 1);
-	select FOUND_ROWS() into v_row_count;
 
 	loop_table: LOOP
     
@@ -133,7 +130,7 @@ sp: BEGIN
             END IF;
             
 			IF upper(v_field_type) in ('CHAR', 'VARCHAR') THEN
-				IF LENGTH(v_tmp) > 0 THEN
+				IF LENGTH(v_tmp) > v_field_size THEN
 					SELECT fn_get_message(C_VALIDATION_SIZE_LIMIT, v_table_name, v_field_name, '', '', v_field_size) INTO p_msg;
 					LEAVE sp;
                 END IF;
@@ -161,27 +158,22 @@ sp: BEGIN
     IF p_action = "I" THEN   
 		SET v_insert = concat('insert into ', p_table_name, ' (', v_fields, ' ) values (', v_values, ');');
 		SET @SQL = v_insert;
+      	SELECT fn_get_message(C_SUCCESS_INSERT, '', '', '', '', '') INTO p_msg;
     ELSEIF p_action = "U" THEN
 		SET v_update = concat('update ', p_table_name, ' set ', v_update, ' where id = ', v_id);
 		SET @SQL = v_update;
+      	SELECT fn_get_message(C_SUCCESS_UPDATE, '', '', '', '', '') INTO p_msg;
     ELSEIF p_action = "D" THEN		
         SET v_delete = concat('DELETE FROM tb_person WHERE id = ', v_id);
         SET @SQL = v_delete;
-    ELSEIF p_action = "S" THEN
-		IF v_id is NULL OR v_id = 0 THEN
-            SET v_select = concat('SELECT * FROM tb_person');
-            SET @SQL = v_select;
-        ELSE
-			SET v_select = concat('SELECT * FROM tb_person WHERE id = ', v_id);
-			SET @SQL = v_select;
-  		END IF;
+      	SELECT fn_get_message(C_SUCCESS_DELETE, '', '', '', '', '') INTO p_msg;
     END IF;
 
 	PREPARE stmt FROM @SQL;
 	EXECUTE stmt;
 	DEALLOCATE PREPARE stmt;
-    
-    SET p_id = 1;
-    SET p_msg = 'Finalizado com successo';
+
+	SET p_id = LAST_INSERT_ID();
+    SET p_st = 1;
 END
 $$
