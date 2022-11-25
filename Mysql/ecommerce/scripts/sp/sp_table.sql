@@ -2,15 +2,16 @@
 delete from tb_person;
 select * from tb_person;
 --
-call sp_table('I', 'tb_person', '0, 1, 1, David Lancioni, 1979-02-15', @sid, @msg);
-call sp_table('I', 'tb_person', '0, 1, 1, Renata Caramelli, 1979-02-15', @sid, @msg);
-call sp_table('U', 'tb_person', '22, 1, 1, David C Lancioni, 1979-02-01', @sid, @msg);
-call sp_table('D', 'tb_person', '23', @sid, @msg);
-call sp_table('S', 'tb_person', '', @sid, @msg);
-call sp_table('S', 'tb_person', '22', @sid, @msg);
+call sp_table('I', 'tb_person', '0, 1, 1, David Lancioni, 1979-02-15', @p_st, @p_msg, @p_id);
+call sp_table('I', 'tb_person', '0, 1, 1, Renata Caramelli, 1979-02-15', @p_st, @p_msg, @p_id);
+call sp_table('U', 'tb_person', '22, 1, 1, David C Lancioni, 1979-02-01', @p_st, @p_msg, @p_id);
+call sp_table('D', 'tb_person', '23', @p_st, @p_msg, @p_id);
+call sp_table('S', 'tb_person', '', @p_st, @p_msg, @p_id);
+call sp_table('S', 'tb_person', '22', @p_st, @p_msg, @p_id);
 --
-call sp_table('I', 'tb_person', '0, 1, 1, David Lancioni, 1979-02-15', @sid, @msg);
-select @sid, @msg
+call sp_table('I', 'tb_person', '0, 1, 1,  , 1979-02-15', @p_st, @p_msg, @p_id);
+select @p_st, @p_msg, @p_id
+
 */
 USE ecommerce;
 
@@ -21,8 +22,9 @@ CREATE PROCEDURE sp_table
 	IN p_action char(1),
 	IN p_table_name VARCHAR(500),
 	IN p_values VARCHAR(500),
-    OUT sid INT,
-    OUT msg VARCHAR(500)
+    OUT p_st INT,
+    OUT p_msg VARCHAR(500),
+	OUT p_id INT
 )
 LANGUAGE SQL
 DETERMINISTIC
@@ -67,6 +69,25 @@ sp: BEGIN
 
 	DECLARE CONTINUE HANDLER FOR NOT FOUND SET finished = 1;
 	OPEN cursor_table;
+    
+    SET p_st = 0;
+    SET p_msg  = '';
+	SET p_id = 0;
+    
+    -- Validate the action
+	IF p_action NOT IN ('I', 'U', 'D', 'S') THEN
+        SELECT fn_get_message(1, '', '') INTO p_msg;
+		LEAVE sp;
+    END IF;
+
+    -- Validate Id (mandatory for update or delete)
+	IF p_action IN ('U', 'D') THEN
+		SET v_id = fn_split(p_values, ',', 1);
+		IF v_id = '' OR v_id = '0' or v_id IS NULL THEN
+			SELECT fn_get_message(2, '', '') INTO p_msg;
+			LEAVE sp;
+		END IF;
+    END IF;
 
 	SET v_id = fn_split(p_values, ',', 1);
 	select FOUND_ROWS() into v_row_count;
@@ -84,6 +105,15 @@ sp: BEGIN
         IF lower(v_field_name) <> 'id' THEN
 
             SET v_tmp = concat("'", fn_split(p_values, ',', v_row), "'");
+            
+            IF upper(v_field_nullable) = 'NO' THEN
+				IF v_tmp = "''" THEN
+					select 'abcde';
+					SELECT fn_get_message(2, concat(v_table_name, '.', v_field_name), '') INTO p_msg;
+					LEAVE sp;					
+				END IF;
+            END IF;
+
 			IF upper(v_field_type) in ('INTEGER', 'INT', 'SMALLINT', 'TINYINT', 'MEDIUMINT', 'BIGINT', 'DECIMAL', 'NUMERIC', 'FLOAT', 'DOUBLE') THEN
 				SET v_tmp = replace(v_tmp, "'", "");
 			END IF;
@@ -127,5 +157,8 @@ sp: BEGIN
 	PREPARE stmt FROM @SQL;
 	EXECUTE stmt;
 	DEALLOCATE PREPARE stmt;
+    
+    SET p_id = 1;
+    SET p_msg = 'Finalizado com successo';
 END
 $$

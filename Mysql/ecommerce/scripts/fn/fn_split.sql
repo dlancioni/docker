@@ -1,5 +1,5 @@
 /*
-SELECT SPLIT("1, 'David Lancioni', 100.22", ',', 3) as third;
+SELECT SPLIT("1, 'David Lancioni', 100.22 ", ',', 3) as third;
 */
 DROP FUNCTION IF EXISTS fn_split;
 CREATE FUNCTION fn_split(
@@ -9,8 +9,8 @@ CREATE FUNCTION fn_split(
 )
 RETURNS VARCHAR(255)
 DETERMINISTIC
-RETURN REPLACE(SUBSTRING(SUBSTRING_INDEX(x, delim, pos),
+RETURN TRIM(REPLACE(SUBSTRING(SUBSTRING_INDEX(x, delim, pos),
        LENGTH(SUBSTRING_INDEX(x, delim, pos -1)) + 1),
-       delim, '');
+       delim, ''));
        
        
