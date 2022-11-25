@@ -7,7 +7,7 @@ call sp_table('I', 'tb_person', '0, 1, 1, Renata Caramelli, 1979-02-15', @sid, @
 call sp_table('U', 'tb_person', '22, 1, 1, David C Lancioni, 1979-02-01', @sid, @msg);
 call sp_table('D', 'tb_person', '23', @sid, @msg);
 call sp_table('S', 'tb_person', '', @sid, @msg);
-call sp_table('S', 'tb_person', '23', @sid, @msg);
+call sp_table('S', 'tb_person', '22', @sid, @msg);
 --
 call sp_table('I', 'tb_person', '0, 1, 1, David Lancioni, 1979-02-15', @sid, @msg);
 select @sid, @msg
@@ -50,7 +50,7 @@ sp: BEGIN
 
 	DECLARE finished INTEGER DEFAULT 0;
 
-	DECLARE curTable CURSOR FOR
+	DECLARE cursor_table CURSOR FOR
 	SELECT
 	t1.table_name,
 	t2.column_name,
@@ -66,17 +66,17 @@ sp: BEGIN
 	ORDER BY t2.ordinal_position;
 
 	DECLARE CONTINUE HANDLER FOR NOT FOUND SET finished = 1;
-	OPEN curTable;
+	OPEN cursor_table;
 
 	SET v_id = fn_split(p_values, ',', 1);
 	select FOUND_ROWS() into v_row_count;
 
-	getTable: LOOP
+	loop_table: LOOP
     
-		FETCH curTable INTO v_table_name, v_field_name, v_field_type, v_field_size, v_field_nullable;
+		FETCH cursor_table INTO v_table_name, v_field_name, v_field_type, v_field_size, v_field_nullable;
 
 		IF finished = 1 THEN
-			LEAVE getTable;
+			LEAVE loop_table;
 		END IF;
 
 		SET v_row = v_row + 1;
@@ -100,8 +100,10 @@ sp: BEGIN
 
         END IF;
 
-	END LOOP getTable;
-	CLOSE curTable;
+	END LOOP loop_table;
+	CLOSE cursor_table;
+    
+        
 
     IF p_action = "I" THEN   
 		SET v_insert = concat('insert into ', p_table_name, ' (', v_fields, ' ) values (', v_values, ');');
