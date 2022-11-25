@@ -9,7 +9,7 @@ call sp_table('D', 'tb_person', '23', @p_st, @p_msg, @p_id);
 call sp_table('S', 'tb_person', '', @p_st, @p_msg, @p_id);
 call sp_table('S', 'tb_person', '22', @p_st, @p_msg, @p_id);
 --
-call sp_table('I', 'tb_person', '0, 1, 1,  , 1979-02-15', @p_st, @p_msg, @p_id);
+call sp_table('I', 'tb_person', '99, 1, 1, ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd , 1979-02-15', @p_st, @p_msg, @p_id);
 select @p_st, @p_msg, @p_id
 
 */
@@ -31,6 +31,11 @@ DETERMINISTIC
 SQL SECURITY DEFINER
 COMMENT 'Table maintenence for given table'
 sp: BEGIN
+
+    DECLARE C_VALIDATION_VALID_ACTION INT DEFAULT 1;
+	DECLARE C_VALIDATION_MANDATORY_FIELD INT DEFAULT 2;
+    DECLARE C_VALIDATION_RECORD_NOT_FOUND_UPDATE_DELETE INT DEFAULT 3;
+    DECLARE C_VALIDATION_SIZE_LIMIT INT DEFAULT 4;
 
     DECLARE v_table_name varchar(100) DEFAULT "";
     DECLARE v_field_name varchar(100) DEFAULT "";
@@ -76,17 +81,31 @@ sp: BEGIN
     
     -- Validate the action
 	IF p_action NOT IN ('I', 'U', 'D', 'S') THEN
-        SELECT fn_get_message(1, '', '') INTO p_msg;
+        SELECT fn_get_message(C_VALIDATION_VALID_ACTION, '', '', '', '', '') INTO p_msg;
 		LEAVE sp;
     END IF;
 
     -- Validate Id (mandatory for update or delete)
 	IF p_action IN ('U', 'D') THEN
+    
 		SET v_id = fn_split(p_values, ',', 1);
+        
 		IF v_id = '' OR v_id = '0' or v_id IS NULL THEN
-			SELECT fn_get_message(2, '', '') INTO p_msg;
+			SELECT fn_get_message(C_VALIDATION_MANDATORY_FIELD, p_table_name, 'id', '', '', '') INTO p_msg;
 			LEAVE sp;
 		END IF;
+        
+		SET @SQL = concat('SELECT * FROM ', p_table_name, ' WHERE id = ', v_id);
+		PREPARE stmt FROM @SQL;
+		EXECUTE stmt;
+		DEALLOCATE PREPARE stmt;
+        
+        IF FOUND_ROWS() = 0 THEN
+            SET p_id = v_id;        
+			SELECT fn_get_message(C_VALIDATION_RECORD_NOT_FOUND_UPDATE_DELETE, p_table_name, 'id', p_table_name, 'id', v_id) INTO p_msg;
+			LEAVE sp;
+        END IF;
+        
     END IF;
 
 	SET v_id = fn_split(p_values, ',', 1);
@@ -104,18 +123,24 @@ sp: BEGIN
 
         IF lower(v_field_name) <> 'id' THEN
 
-            SET v_tmp = concat("'", fn_split(p_values, ',', v_row), "'");
+            SET v_tmp = fn_split(p_values, ',', v_row);
             
             IF upper(v_field_nullable) = 'NO' THEN
-				IF v_tmp = "''" THEN
-					select 'abcde';
-					SELECT fn_get_message(2, concat(v_table_name, '.', v_field_name), '') INTO p_msg;
-					LEAVE sp;					
+				IF v_tmp = '' OR v_tmp = '0'  THEN
+					SELECT fn_get_message(C_VALIDATION_MANDATORY_FIELD, v_table_name, v_field_name, '', '', '') INTO p_msg;
+					LEAVE sp;
 				END IF;
             END IF;
+            
+			IF upper(v_field_type) in ('CHAR', 'VARCHAR') THEN
+				IF LENGTH(v_tmp) > 0 THEN
+					SELECT fn_get_message(C_VALIDATION_SIZE_LIMIT, v_table_name, v_field_name, '', '', v_field_size) INTO p_msg;
+					LEAVE sp;
+                END IF;
+			END IF;
 
-			IF upper(v_field_type) in ('INTEGER', 'INT', 'SMALLINT', 'TINYINT', 'MEDIUMINT', 'BIGINT', 'DECIMAL', 'NUMERIC', 'FLOAT', 'DOUBLE') THEN
-				SET v_tmp = replace(v_tmp, "'", "");
+			IF upper(v_field_type) not in ('INTEGER', 'INT', 'SMALLINT', 'TINYINT', 'MEDIUMINT', 'BIGINT', 'DECIMAL', 'NUMERIC', 'FLOAT', 'DOUBLE') THEN
+				SET v_tmp = concat("'", fn_split(p_values, ',', v_row), "'");
 			END IF;
 
 			SET v_fields = concat(v_fields, v_field_name);
@@ -132,8 +157,6 @@ sp: BEGIN
 
 	END LOOP loop_table;
 	CLOSE cursor_table;
-    
-        
 
     IF p_action = "I" THEN   
 		SET v_insert = concat('insert into ', p_table_name, ' (', v_fields, ' ) values (', v_values, ');');
