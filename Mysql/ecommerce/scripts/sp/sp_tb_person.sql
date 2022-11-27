@@ -7,7 +7,7 @@ call sp_tb_person('d', 0, null, null, null, null, @v_st, @v_msg);
 call sp_tb_person('s', 1, null, null, null, null, @v_st, @v_msg);
 call sp_tb_person('s', null, null, null, null, null, @v_st, @v_msg);
 
-call sp_tb_person('i', null, 0, 1, 'name 2', '2022-12-31', @v_st, @v_msg);
+call sp_tb_person('i', null, 9, 1, 'name 22', '2022-12-31', @v_st, @v_msg);
 select @v_st, @v_msg
 
 */
@@ -32,6 +32,15 @@ sql security definer
 comment 'manage order and order items'
 sp: begin
 
+    DECLARE C_VALIDATION_VALID_ACTION INT DEFAULT 1;
+	DECLARE C_VALIDATION_MANDATORY_FIELD INT DEFAULT 2;
+    DECLARE C_VALIDATION_NOT_FOUND INT DEFAULT 3;
+    DECLARE C_VALIDATION_FK_INSERT INT DEFAULT 4;
+    
+    DECLARE C_SUCCESS_INSERT INT DEFAULT 10;
+    DECLARE C_SUCCESS_UPDATE INT DEFAULT 11;
+    DECLARE C_SUCCESS_DELETE INT DEFAULT 12;    
+
     declare v_count int default 0;
 	declare v_value varchar(500) default '';    
 
@@ -41,7 +50,7 @@ sp: begin
     
 	if p_action not in ('I', 'U', 'D', 'S') then
 		set v_value = '';
-        select fn_msg(1, v_value, 1) into v_msg;
+        select fn_msg(C_VALIDATION_VALID_ACTION, v_value, 1) into v_msg;
 		leave sp;
     end if;
 
@@ -49,14 +58,14 @@ sp: begin
     
 		if p_id is null or p_id = 0 then
 			set v_value = fn_label('tb_person.id');
-			select fn_msg(2, v_value, 1) into v_msg;
+			select fn_msg(C_VALIDATION_MANDATORY_FIELD, v_value, 1) into v_msg;
 			leave sp;
 		end if;
                 
         select count(id) into v_count from tb_person where id = p_id;        
 		if v_count = 0 then
 			set v_value = concat(fn_label('tb_person.id'), ',', p_id, ',', fn_label('tb_person'));
-			select fn_msg(3, v_value, 3) into v_msg;
+			select fn_msg(C_VALIDATION_NOT_FOUND, v_value, 3) into v_msg;
 			leave sp;
 		end if;
 
@@ -64,29 +73,22 @@ sp: begin
     
 	if p_action = 'I' or p_action = 'U' then
     
-		-- mandatory
 		if p_type_id is null or p_type_id = 0 then
 			set v_value = fn_label('tb_person.type_id');
-			select fn_msg(2, v_value, 1) into v_msg;
+			select fn_msg(C_VALIDATION_MANDATORY_FIELD, v_value, 1) into v_msg;
 			leave sp;
 		end if;
 
-		-- field size
-		if length(p_name) > 50 then
-			select fn_get_message(4, 'tb_person', 'name', '', '') into v_msg;
-			leave sp;
-		end if;
-       
-		-- foreign keys		
-		select id from tb_person_type where id = p_type_id;
-        if found_rows() = 0 then
-			select fn_get_message(3, 'tb_person', 'type_id', 'tb_person_type', 'id') into v_msg;
+        select count(id) into v_count from tb_person_type where id = p_type_id;
+		if v_count = 0 then              
+			set v_value = concat(fn_label('tb_person.type_id'), ',', p_type_id, ',', fn_label('tb_person_type.id'));
+  			select fn_msg(C_VALIDATION_FK_INSERT, v_value, 3) into v_msg;
 			leave sp;
         end if;		
 
 	end if;    
 
-    if p_action = "i" then
+    if p_action = "I" then
 
 		insert into tb_person
 		(
@@ -100,8 +102,10 @@ sp: begin
 			p_name,
 			p_birth
 		);       
+        
+		select fn_msg(C_SUCCESS_INSERT, '', 1) INTO v_msg;
 
-    elseif p_action = "u" then
+    elseif p_action = "U" then
 
 		update tb_person set
 			classification_id = p_classification_id,
@@ -110,13 +114,16 @@ sp: begin
 			birth = p_birth
 		where id = p_id;
         
-    elseif p_action = "d" then
+		select fn_msg(C_SUCCESS_UPDATE, '', 1) into v_msg;
+        
+    elseif p_action = "D" then
 
 		delete from tb_person where id = p_id;
+		select fn_msg(C_SUCCESS_DELETE, '', 1) into v_msg;
 
-    elseif p_action = "s" then
+    elseif p_action = "S" then
 
-		if p_id is null then
+		if p_id is null or p_id = 0 then
 			select * from tb_person;
         else
 			select * from tb_person where id = p_id;
@@ -125,6 +132,6 @@ sp: begin
     end if;
 
 	set v_st = 1;
-	set v_msg = 'processado com sucesso !!!';
+
 end
 $$
