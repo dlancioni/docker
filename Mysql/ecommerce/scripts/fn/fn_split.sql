@@ -1,16 +1,14 @@
 /*
-SELECT SPLIT("1, 'David Lancioni', 100.22 ", ',', 3) as third;
+select fn_split("1, 'david lancioni', 100.22 ", ',', 3);
 */
-DROP FUNCTION IF EXISTS fn_split;
-CREATE FUNCTION fn_split(
-  x VARCHAR(255),
-  delim VARCHAR(12),
-  pos INT
+drop function if exists fn_split;
+
+create function fn_split
+(
+  x varchar(255),
+  delim varchar(12),
+  pos int
 )
-RETURNS VARCHAR(255)
-DETERMINISTIC
-RETURN TRIM(REPLACE(SUBSTRING(SUBSTRING_INDEX(x, delim, pos),
-       LENGTH(SUBSTRING_INDEX(x, delim, pos -1)) + 1),
-       delim, ''));
-       
-       
+returns varchar(255)
+deterministic
+return trim(replace(substring(substring_index(x, delim, pos), length(substring_index(x, delim, pos -1)) + 1), delim, ''));
