@@ -19,6 +19,8 @@ begin
 	declare v_count int default 0;
     declare v_tmp varchar(500) default '';
     declare v_value varchar(500) default '';
+    declare v_table varchar(500) default '';
+    declare v_field varchar(500) default '';
 	declare v_msg varchar(500) default '';
 
     select message into v_msg from tb_message where id = p_id;
@@ -27,9 +29,23 @@ begin
 		set v_count = v_count + 1;
         
         set v_value = fn_split(p_values, ',', v_count);
-        set v_tmp = concat('%', v_count);        
-        set v_msg = replace(v_msg, v_tmp, v_value);
         
+        if instr(v_value, 'tb_') > 0 then
+
+			set v_table = fn_aplit(v_value, '.', 1);
+            set v_field = fn_aplit(v_value, '.', 2);
+
+			select 
+			table_label,
+			field_label 
+			into v_table, v_field
+			from vw_table_field
+			where table_name = v_table
+			and field_name = v_field;
+
+        end if;
+
+        set v_msg = replace(v_msg, concat('%', v_count), v_value);
         if v_count > p_count then
             leave loop_1;
         end if;
