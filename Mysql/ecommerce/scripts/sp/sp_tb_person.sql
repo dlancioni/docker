@@ -1,11 +1,11 @@
 /*
 delete from tb_person;
 select * from tb_person;
-call sp_tb_person('i', null, 1, 1, 'name 2', '2022-12-31', @v_st, @v_msg);
-call sp_tb_person('u', 1, 1, 1, 'name 1', '2021-01-01', @v_st, @v_msg);
-call sp_tb_person('d', 0, null, null, null, null, @v_st, @v_msg);
-call sp_tb_person('s', 1, null, null, null, null, @v_st, @v_msg);
-call sp_tb_person('s', null, null, null, null, null, @v_st, @v_msg);
+call sp_tb_person('I', null, 1, 1, 'name 2', '2022-12-31', @v_st, @v_msg);
+call sp_tb_person('U', 1, 1, 1, 'name 1', '2021-01-01', @v_st, @v_msg);
+call sp_tb_person('D', 0, null, null, null, null, @v_st, @v_msg);
+call sp_tb_person('S', 1, null, null, null, null, @v_st, @v_msg);
+call sp_tb_person('S', null, null, null, null, null, @v_st, @v_msg);
 
 call sp_tb_person('i', null, 9, 1, 'name 22', '2022-12-31', @v_st, @v_msg);
 select @v_st, @v_msg
