@@ -1,13 +1,14 @@
 /*
 delete from tb_person;
 select * from tb_person;
+
 call sp_tb_person('I', null, 1, 1, 'name 2', '2022-12-31', @v_st, @v_msg);
 call sp_tb_person('U', 1, 1, 1, 'name 1', '2021-01-01', @v_st, @v_msg);
 call sp_tb_person('D', 0, null, null, null, null, @v_st, @v_msg);
-call sp_tb_person('S', 1, null, null, null, null, @v_st, @v_msg);
+call sp_tb_person('S', 28, null, null, null, null, @v_st, @v_msg);
 call sp_tb_person('S', null, null, null, null, null, @v_st, @v_msg);
 
-call sp_tb_person('i', null, 9, 1, 'name 22', '2022-12-31', @v_st, @v_msg);
+call sp_tb_person('I', null, 11, 1, 'name 2', '2022-12-31', @v_st, @v_msg);
 select @v_st, @v_msg
 
 */
@@ -81,7 +82,7 @@ sp: begin
 
         select count(id) into v_count from tb_person_type where id = p_type_id;
 		if v_count = 0 then              
-			set v_value = concat(fn_label('tb_person.type_id'), ',', p_type_id, ',', fn_label('tb_person_type.id'));
+			set v_value = concat(fn_label('tb_person.type_id'), ',', p_type_id, ',', fn_label('tb_person_type'));
   			select fn_msg(C_VALIDATION_FK_INSERT, v_value, 3) into v_msg;
 			leave sp;
         end if;		
