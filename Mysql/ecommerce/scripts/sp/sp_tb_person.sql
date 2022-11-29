@@ -37,12 +37,18 @@ sp: begin
 
 	set v_st = 0;
 	set v_msg = '';
-    set p_action = upper(p_action);
     
-	if p_action not in ('I', 'U', 'D', 'S') then
-        set v_msg = 'Ação inválida, deve ser [I]nsert, [U]pdate, [D]elete ou [S]elect';
-		leave sp;
-    end if;
+    -- Valid action
+    select fn_validate_action(p_action) into v_msg;
+	if v_msg <> '' then 
+		leave sp; 
+	end if;
+
+    -- Mandatory fields
+    select fn_validate_mandatory(p_action, p_name, 'tb_person', 'name') into v_msg;
+	if v_msg <> '' then 
+		leave sp; 
+	end if;
 
 	if p_action = 'U' or p_action = 'D' then
     
@@ -53,7 +59,7 @@ sp: begin
         
         select count(id) into v_count from tb_person where id = p_id;        
 		if v_count = 0 then
-            set v_msg = concat('Valor informado para o campo [TB_PERSON.ID] não existe no cadastro de [TB_PERSON]')
+            set v_msg = concat('Valor informado para o campo [TB_PERSON.ID] não existe no cadastro de [TB_PERSON]');
 			leave sp;
 		end if;
         
