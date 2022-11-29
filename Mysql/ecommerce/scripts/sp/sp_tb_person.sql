@@ -1,15 +1,16 @@
 /*
 delete from tb_person
 select * from tb_person
+select * from tb_person_type
 select * from tb_person_classification
 
-call sp_tb_person('I', null, 1, 1, 'Name 1', '2022-12-31', @v_st, @v_msg);
+call sp_tb_person(1, 'I', 1, 1, 1, 'Name 1', '2022-12-31', @v_st, @v_msg, @v_id);
 select @v_st, @v_msg
 
-call sp_tb_person('U', 1, 3, 3, 'David Lancioni', '1979-02-15', @v_st, @v_msg);
+call sp_tb_person(1, 'U', 2, 2, 3, 'David Lancioni', '1979-02-15', @v_st, @v_msg);
 select @v_st, @v_msg
 
-call sp_tb_person('D', 36, null, null, null, null, @v_st, @v_msg);
+call sp_tb_person(1, 'D', 7, null, null, null, null, @v_st, @v_msg);
 select @v_st, @v_msg
 */
 use ecommerce;
@@ -18,6 +19,7 @@ delimiter $$
 drop procedure if exists sp_tb_person;
 create procedure sp_tb_person
 (
+	in p_user_id int,
 	in p_action char(1),
 	in p_id int,
 	in p_type_id int,
@@ -25,7 +27,8 @@ create procedure sp_tb_person
     in p_name varchar(50),
 	in p_birth date,
     out v_st int,
-    out v_msg varchar(500)
+    out v_msg varchar(500),
+    out v_id int
 )
 language sql
 deterministic
@@ -50,34 +53,11 @@ sp: begin
 		leave sp; 
 	end if;
 
-	if p_action = 'U' or p_action = 'D' then
-    
-		if p_id is null or p_id = 0 then        
-			set v_msg = 'Campo Id é obrigatório na alteração ou exclusão de registros';
-			leave sp;
-		end if;
-        
-        select count(id) into v_count from tb_person where id = p_id;        
-		if v_count = 0 then
-            set v_msg = concat('Valor informado para o campo [TB_PERSON.ID] não existe no cadastro de [TB_PERSON]');
-			leave sp;
-		end if;
-        
-    end if;
-    
-	if p_action = 'I' or p_action = 'U' then   
-    
-		if p_type_id is null or p_type_id = 0 then
-   		    set v_msg = 'Campo Id é obrigatório';
-			leave sp;
-		end if;
-        
-        select count(id) into v_count from tb_person_type where id = p_type_id;
-		if v_count = 0 then
-  			set v_msg = concat('Valor informado para o campo [TB_PERSON.TYPE_ID] não existe no cadastro de [TB_PERSON_TYPE]');
-			leave sp;
-        end if;
-        
+	-- Validate fk
+    select count(id) into v_count from tb_person_type where id = p_type_id;
+    select fn_validate_fk(p_action, v_count, 'tb_person', 'type_id', 'tb_person_type', 'id') into v_msg;
+	if v_msg <> '' then 
+		leave sp; 
 	end if;
 
     if p_action = "I" then
@@ -94,7 +74,10 @@ sp: begin
 			p_name,
 			p_birth
 		);
+        
+        set v_id = last_insert_id();
 		set v_msg = 'Registro incluído com sucesso';
+		select fn_msg(6) into v_msg;        
 
     elseif p_action = "U" then
 
@@ -104,12 +87,16 @@ sp: begin
 			name = p_name,
 			birth = p_birth
 		where id = p_id;        
-		set v_msg = 'Registro alterado com sucesso';
+        
+        set v_id = last_insert_id();        
+		select fn_msg(7) into v_msg;
         
     elseif p_action = "D" then
 
 		delete from tb_person where id = p_id;       
-		set v_msg = 'Registro excluído com sucesso';
+        
+        set v_id = last_insert_id();        
+		select fn_msg(8) into v_msg;
 
     end if;
 

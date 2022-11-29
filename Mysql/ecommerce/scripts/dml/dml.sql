@@ -14,6 +14,7 @@ insert into tb_message values (8, 'Registro excluído com sucesso');
 -- tb_table_field
 delete from tb_table_field;
 insert into tb_table_field (table_name, field_name, table_label, field_label) values ('tb_person', 'id', 'Pessoas', 'Id');
+insert into tb_table_field (table_name, field_name, table_label, field_label) values ('tb_person', 'type_id', 'Pessoas', 'Tipo de Pessoa');
 insert into tb_table_field (table_name, field_name, table_label, field_label) values ('tb_person', 'name', 'Pessoas', 'Nome');
 insert into tb_table_field (table_name, field_name, table_label, field_label) values ('tb_person_type', 'id', 'Tipo de Pessoas', 'Id');
 insert into tb_table_field (table_name, field_name, table_label, field_label) values ('tb_person_type', 'name', 'Tipo de Pessoas', 'Nome');

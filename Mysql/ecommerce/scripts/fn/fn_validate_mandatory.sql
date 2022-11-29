@@ -16,7 +16,7 @@ create function fn_validate_mandatory
 returns varchar(500)
 deterministic
 begin
-	declare MSG_MANDATORY int default 4;    
+
 	declare v_msg varchar(500) default '';
     declare v_table varchar(50) default '';
     declare v_field varchar(50) default '';
@@ -25,7 +25,7 @@ begin
     
 		if trim(p_value) = '' or trim(p_value) = '0' or trim(p_value) is null then
 
-			select message into v_msg from tb_message where id = MSG_MANDATORY limit 1;
+			select message into v_msg from tb_message where id = 4 limit 1;
 
 			select 
 			table_label, 
