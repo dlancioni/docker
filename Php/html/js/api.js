@@ -1,20 +1,16 @@
-function ler(div) {
 
-    fetch('https://api.github.com/repos/javascript-tutorial/en.javascript.info/commits', {
-        headers: {
-            //Authentication: 'secret'
-        }
-    })
-    .then(response => response.json())
-    .then(commits => document.getElementById(div).innerHTML = commits[0].author.login)
-}
+function callapi(page, form, div) {
 
-function addComponent(page, div) {
-    fetch('./' + page)
+    const data = new URLSearchParams();
+    for (const pair of new FormData(form)) {
+        data.append(pair[0], pair[1]);
+    }
+
+    fetch(page, {method:'post', body:data})
     .then(response => {
-      return response.text()
+        return response.json()
     })
     .then(data => {
-      document.getElementById(div).innerHTML = data;
+        document.getElementById(div).innerHTML = "-> " + data.name;
     });
 }

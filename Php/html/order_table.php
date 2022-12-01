@@ -1,5 +1,10 @@
 
-<!-- The above form looks like this -->
+<br>
+<br>
+<br>
+<br>
+<br>
+
 <h4>Order</h4>
 <form>
   <table class="u-full-width">
@@ -27,9 +32,9 @@
       </tr>
     </tbody>
   </table>
-  <center>
+
   <button onclick="javascript:alert(123);">Novo</button>   
   <button onclick="javascript:alert(123);">Editar</button>   
   <button onclick="javascript:alert(123);">Excluir</button>   
-</center>
+
 </form>
