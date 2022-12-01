@@ -1,14 +1,12 @@
 html {
-    background: #f1f1f1;
-}
-.background {
-    background:#f1f1f1;
+
 }
 
-.input_qtt {
-    width: 3em
-}
-
-.table tr {
+.top_bar {
+    background-color: lightgrey;
+    vertical-align: middle;
     text-align: center;
-} 
+    line-height: normal;
+    height: 50px; 
+    line-height: 50px;
+}
