@@ -5,13 +5,13 @@ select * from tb_person_type
 select * from tb_person_classification
 
 call sp_tb_person(1, 'I', 1, 1, 1, 'Name 1', '2022-12-31', @v_st, @v_msg, @v_id);
-select @v_st, @v_msg
+select @v_st, @v_msg, @v_id
 
-call sp_tb_person(1, 'U', 2, 2, 3, 'David Lancioni', '1979-02-15', @v_st, @v_msg);
-select @v_st, @v_msg
+call sp_tb_person(1, 'U', 51, 1, 3, 'David C Lancioni', '1979-02-15', @v_st, @v_msg, @v_id);
+select @v_st, @v_msg, @v_id
 
-call sp_tb_person(1, 'D', 7, null, null, null, null, @v_st, @v_msg);
-select @v_st, @v_msg
+call sp_tb_person(1, 'D', 17, null, null, null, null, @v_st, @v_msg, @v_id);
+select @v_st, @v_msg, @v_id
 */
 use ecommerce;
 
@@ -60,6 +60,8 @@ sp: begin
 		leave sp; 
 	end if;
 
+	select count(id) into v_count from tb_person where id = p_id;
+
     if p_action = "I" then
 
 		insert into tb_person
@@ -74,30 +76,38 @@ sp: begin
 			p_name,
 			p_birth
 		);
-        
-        set v_id = last_insert_id();
-		set v_msg = 'Registro incluído com sucesso';
-		select fn_msg(6) into v_msg;        
+
+		set v_id = last_insert_id();
 
     elseif p_action = "U" then
 
-		update tb_person set
-			classification_id = p_classification_id,
-			type_id = p_type_id,
-			name = p_name,
-			birth = p_birth
-		where id = p_id;        
+        if v_count = 0 then
+			select fn_not_found(p_action, p_id) into v_msg;
+        else
+			update tb_person set
+				classification_id = p_classification_id,
+				type_id = p_type_id,
+				name = p_name,
+				birth = p_birth
+			where id = p_id;           
+        end if;
         
-        set v_id = last_insert_id();        
-		select fn_msg(7) into v_msg;
+		set v_id = p_id;        
         
     elseif p_action = "D" then
-
-		delete from tb_person where id = p_id;       
+    
+        if v_count = 0 then
+			select fn_not_found(p_action, p_id) into v_msg;
+        else    
+			delete from tb_person where id = p_id;
+        end if;    
         
-        set v_id = last_insert_id();        
-		select fn_msg(8) into v_msg;
+		set v_id = p_id;        
 
+    end if;
+
+    if trim(v_msg) = '' then
+		select fn_success(p_action, v_id) into v_msg;
     end if;
 
 	set v_st = 1;

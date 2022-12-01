@@ -1,13 +1,13 @@
 /*
-select fn_validate_fk_insert('I', 1, 'tb_person', 'id', 'tb_person_type', 'id');
-select fn_validate_fk_insert('U', 1, 'tb_person', 'id', 'tb_person_type', 'id');
-select fn_validate_fk_insert('D', 0, 'tb_person', 'id', 'tb_person_type', 'id');
+select fn_validate_fk('I', 1, 'tb_person', 'id', 'tb_person_type', 'id');
+select fn_validate_fk('U', 1, 'tb_person', 'id', 'tb_person_type', 'id');
+select fn_validate_fk('D', 0, 'tb_person', 'id', 'tb_person_type', 'id');
 */
 use ecommerce;
 
 delimiter $$
-drop function if exists fn_validate_fk_insert;
-create function fn_validate_fk_insert
+drop function if exists fn_validate_fk;
+create function fn_validate_fk
 (
 	p_action char(1),
     p_count int,
@@ -38,7 +38,7 @@ begin
 			where table_name = p_t1
 			and field_name = p_f1;
 
-			set v_msg = replace(v_msg, '%1', v_table);
+			set v_msg = replace(v_msg, '%1', v_field);
 			
 			select 
 			table_label,
@@ -49,9 +49,9 @@ begin
 			and field_name = p_f2;
 			
 			set v_msg = replace(v_msg, '%2', v_table);
-        
+
         end if;
-        
+
     end if;
 
 	if p_action = 'D' then

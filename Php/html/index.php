@@ -1,23 +1,29 @@
-<?php
-$conn = new mysqli("20fade5e5888","root","admin","db1");
+<!DOCTYPE html>
+<html lang="en">
+<?php include 'head.php';?>
+<body>
+    <div class="container">
 
-// Check connection
-if ($mysqli -> connect_errno) {
-  echo "Failed to connect to MySQL: " . $mysqli -> connect_error;
-  exit();
-}
+        <?php include 'menu_top.php';?>
 
-$sql = "SELECT 1+1 total";
-$result = $conn->query($sql);
+        <div class="row">
+            <div><?php include 'search_bar.php';?></div>
+        </div>
 
-if ($result->num_rows > 0) {
+        <div class="row">
 
-    while($row = $result->fetch_assoc()) {
-      echo "id: " . $row["total"] ;
-    }
-  } else {
-    echo "0 results";
-  }
-  $conn->close();
+            <div class="three columns">
+                <div><?php include 'menu_left.php';?></div>
+            </div>
 
-?>
+            <div class="nine columns">
+                <div id="contents">abcdef</div>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+</html>
+
+<!-- https://ionic.io/ionicons -->

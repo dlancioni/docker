@@ -1,12 +1,12 @@
 /*
-select fn_validate_mandatory(3, 'tb_person_type', 'name');
+select fn_validate_mandatory(3, '', 'tb_person_type', 'name');
 select * from tb_message
 */
 use ecommerce;
 
 delimiter $$
-drop function if exists fn_validate_mandatory;
-create function fn_validate_mandatory
+drop function if exists fn_validate_exists;
+create function fn_validate_exists
 (
 	p_action char(1),
 	p_value varchar(50),
