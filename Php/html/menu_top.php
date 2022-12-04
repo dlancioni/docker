@@ -8,7 +8,7 @@
 
         <div class="three columns">
             <img src="/svg/bag.svg" width="20" heigth="20">
-            <a href="order.php"> Meus Pedidos</a>
+            <a href="module.php?id=1"> Meus Pedidos</a>
         </div>
 
         <div class="three columns">

@@ -1,7 +1,8 @@
 USE ecommerce;
 /*
-select * from vw_catalog where table_schema = 'ecommerce' 
-select * from vw_catalog where table_schema = 'ecommerce' and table_name = 'tb_person'
+select * from vw_catalog 
+where table_schema = 'ecommerce' 
+and table_name = 'tb_person'
 */
 
 drop view if exists vw_catalog;

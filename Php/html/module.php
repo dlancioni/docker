@@ -7,7 +7,7 @@
         <?php include 'menu_top.php';?>
 
         <div class="row">
-            <?php include 'order_table.php';?>
+            <?php include 'module_table.php';?>
         </div>
 
     </div>
