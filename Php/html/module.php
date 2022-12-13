@@ -3,9 +3,6 @@
 <?php include 'head.php';?>
 <body>
     <div class="container">
-
-        <?php include 'menu_top.php';?>
-
         <div class="row">
             <?php include 'module_table.php';?>
         </div>

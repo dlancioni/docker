@@ -2,8 +2,7 @@
 <html lang="en">
 <?php include 'head.php';?>
 <body>
-    <div class="container">
-        <?php include 'menu_top.php';?>
+    <div class="container">        
         <?php include 'login_form.php';?>
     </div>
 </body>

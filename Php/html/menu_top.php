@@ -1,25 +1,30 @@
-<div class="top_bar" >
+<nav class="navbar navbar-expand-lg bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href=".">Navbar</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-    <div class="row" >
-        <div class="three columns">            
-            <img src="/svg/home.svg" width="20" heigth="20">
-            <a href="index.php"> Home</a>            
-        </div>
-
-        <div class="three columns">
-            <img src="/svg/bag.svg" width="20" heigth="20">
-            <a href="module.php?id=1"> Meus Pedidos</a>
-        </div>
-
-        <div class="three columns">
-            <img src="/svg/account.svg" width="20" heigth="20">
-            <a href="login.php">Minha conta</a>
-        </div>
-
-        <div class="three columns">
-            <img src="/svg/cart.svg" width="20" heigth="20">
-            <a href="index.php">Meu carrinho</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Cadastros</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="module.php">Pedidos</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="module.php">Clientes</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="login.php">login</a>
+                </li>                
+            </ul>
+            
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
         </div>
     </div>
-</div>
-<br>
+</nav>

@@ -1,7 +1,9 @@
+</p>
+<h4>Pedidos em aberto</h4>
+</p>
 
-<h4>Order</h4>
 <form>
-  <table class="u-full-width">
+  <table class="table table-hover">
     <thead>
       <tr>
         <th>Name</th>
@@ -27,8 +29,8 @@
     </tbody>
   </table>
 
-  <button onclick="javascript:alert(123);">Novo</button>   
-  <button onclick="javascript:alert(123);">Editar</button>   
-  <button onclick="javascript:alert(123);">Excluir</button>   
+  <button class="btn btn-light" onclick="javascript:alert(123);">Novo</button>   
+  <button class="btn btn-light" onclick="javascript:alert(123);">Editar</button>   
+  <button class="btn btn-light" onclick="javascript:alert(123);">Excluir</button>   
 
 </form>

@@ -1,27 +1,23 @@
-
-<!-- The above form looks like this -->
+</p>
+</p>
+</p>
 <form id="form1">
-
-    <div class="row">
-        <div class="four columns">
-            <label for="username">Usuário</label>
-            <input class="u-full-width" type="text" placeholder="" name="username" value="">
+    <div class="form-group">
+        <div class="col-3">
+            <label for="email">Email</label>
+            <input type="text" class="form-control" id="email" placeholder="">
         </div>
     </div>
-
-    <div class="row">
-        <div class="four columns">
+    <div class="form-group">
+        <div class="col-3">
             <label for="password">Senha</label>
-            <input class="u-full-width" type="text" placeholder="" name="password">
-        </div>    
+            <input type="text" class="form-control" id="password" placeholder="">
+        </div>
     </div>
-
-    <input type="button" onClick="JavaScript:callapi('api/login.php', form1, 'msg');" value="Entrar">
-
-    <br>
-    <div class="font-white">David Lancioni</div>
-    <br>
-    <div id="msg">resultado</div>    
-
+    </p>
+    <div class="form-group">
+        <div class="col-3">
+            <button class="btn btn-secondary">Entrar</button>    
+        </div>
+    </div>        
 </form>
-
