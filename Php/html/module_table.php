@@ -29,8 +29,8 @@
     </tbody>
   </table>
 
-  <button class="btn btn-light" onclick="javascript:alert(123);">Novo</button>   
-  <button class="btn btn-light" onclick="javascript:alert(123);">Editar</button>   
-  <button class="btn btn-light" onclick="javascript:alert(123);">Excluir</button>   
+  <button class="btn btn-outline-secondary" onclick="javascript:alert(123);">Novo</button>   
+  <button class="btn btn-outline-secondary" onclick="javascript:alert(123);">Editar</button>   
+  <button class="btn btn-outline-secondary" onclick="javascript:alert(123);">Excluir</button>   
 
 </form>

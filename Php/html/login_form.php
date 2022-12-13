@@ -17,7 +17,7 @@
     </p>
     <div class="form-group">
         <div class="col-3">
-            <button class="btn btn-secondary">Entrar</button>    
+            <button class="btn btn-outline-secondary">Entrar</button>    
         </div>
     </div>        
 </form>
