@@ -1,0 +1,7 @@
+-- backup specific database
+mysqldump --user=root --password=admin --result-file=./backup/backup1.sql --databases test
+source ./backup/backup1.sql
+
+-- backup table
+mysqldump -u root -p db1 tb_address > tbl.sql
+mysql -u root -p db2 < tbl.sql

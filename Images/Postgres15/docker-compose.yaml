@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  postgres-master:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: "admin"
+    ports:
+      - "5001:5432"
+  postgres-slave1:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: "admin"
+    ports:
+      - "5002:5432"
+  postgres-slave2:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: "admin"
+    ports:
+      - "5003:5432"      

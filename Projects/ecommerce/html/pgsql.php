@@ -1,9 +1,9 @@
 <?php
 
-$host='kesavan.db.elephantsql.com';
-$db = 'didkpepa';
-$username = 'didkpepa';
-$password = 'oavpNBSri87YlVUYzXMKUSkkhAktacSb';
+$host='db';
+$db = 'postgres';
+$username = 'postgres';
+$password = 'admin';
 $dsn = "pgsql:host=$host;port=5432;dbname=$db;user=$username;password=$password";
 
 try {
@@ -14,7 +14,7 @@ try {
     }
 
     // use the connection here
-    $stm = $conn->query('SELECT * FROM lancioni.tb_user');
+    $stm = $conn->query('SELECT 1+1 total');
 
     // fetch all rows into array, by default PDO::FETCH_BOTH is used
     $rows = $stm->fetchAll();
@@ -28,8 +28,5 @@ try {
 catch (PDOException $e) {
   echo $e->getMessage();
 }
-
-
-
 
 ?>

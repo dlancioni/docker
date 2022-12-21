@@ -1,0 +1,10 @@
+Script to copy and rename a database
+
+-- Backup
+mysqldump -u username -p -v db1 > db1.sql
+
+-- Create new database
+mysqladmin -u username -p create db2
+
+-- Restore
+mysql -u username -p db2 < db1.sql
