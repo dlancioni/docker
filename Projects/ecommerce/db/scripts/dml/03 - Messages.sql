@@ -1,6 +1,9 @@
-use ecommerce;
-
-delete from tb_message;
+drop table if exists tb_message;
+create table tb_message 
+(
+    id serial,
+    message varchar(500) not null
+);
 
 insert into tb_message values (1, 'Ação inválida, deve ser [I]nsert, [U]pdate, [D]elete ou [S]elect');
 insert into tb_message values (2, 'Campo Id é obrigatório na alteração ou exclusão de registros');

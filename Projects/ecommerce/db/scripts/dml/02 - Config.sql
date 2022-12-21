@@ -1,5 +1,3 @@
-use ecommerce;
-
 -- tb_person_type
 delete from tb_person_type;
 insert into tb_person_type (id, ds) values (1, 'Pessoa Física');
