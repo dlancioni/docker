@@ -4,6 +4,8 @@ select * from tb_table
 select * from tb_field
 */
 
+drop view vw_table_field;
+
 drop table if exists tb_table;
 create table tb_table
 (
@@ -34,7 +36,7 @@ insert into tb_field (table_id, name, label) values (current_setting('app.id')::
 insert into tb_field (table_id, name, label) values (current_setting('app.id')::int, 'ds', 'Descrição');
 
 -- tb_person
-set app.id = 2;
+set app.id = 3;
 insert into tb_table (id, name, label) values (current_setting('app.id')::int, 'tb_person', 'Pessoas');
 insert into tb_field (table_id, name, label) values (current_setting('app.id')::int, 'id', 'Id');
 insert into tb_field (table_id, name, label) values (current_setting('app.id')::int, 'type_id', 'Tipo de Pessoa');

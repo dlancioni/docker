@@ -1,9 +1,9 @@
 /*
 select * from vw_table_field
 where table_name = 'tb_person' 
-and field_name = 'ds'
+and field_name = 'birth'
 */
-create view vw_table_field as
+create or replace view vw_table_field as
 select
 t.name table_name,
 f.name field_name,
