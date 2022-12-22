@@ -5,7 +5,7 @@ select fn_validate_fk('D', 1, 'tb_person', 'id', 'tb_person_type', 'id');
 */
 create or replace function fn_validate_fk
 (
-	p_action char(1),
+	p_action int,
     p_count int,
     p_t1 text,
     p_f1 text,
@@ -23,7 +23,7 @@ declare
 
 begin
 
-	if p_action in ('I', 'U') then
+	if p_action in (1, 2) then
 
 		if p_count = 0 then
     
@@ -55,7 +55,7 @@ begin
 
     end if;
 
-	if p_action = 'D' then
+	if p_action = 3 then
 
 		if p_count > 0 then
 

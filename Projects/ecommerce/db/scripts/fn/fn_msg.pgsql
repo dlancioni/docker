@@ -1,7 +1,10 @@
 /*
 select fn_msg(12);
  */
-create or replace function fn_msg(p_id int)
+create or replace function fn_msg
+(
+    p_id int
+)
 returns text
 language plpgsql
 as

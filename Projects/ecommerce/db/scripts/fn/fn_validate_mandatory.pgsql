@@ -3,7 +3,7 @@ select fn_validate_mandatory('I', '', 'tb_person_type', 'ds');
 */
 create or replace function fn_validate_mandatory
 (
-	p_action char(1),
+	p_action int,
 	p_value text,
     p_t1 text,
     p_f1 text
@@ -19,7 +19,7 @@ declare
 
 begin
     
-    if p_action in ('I', 'U') then
+    if p_action in (1, 2) then
 
 		if trim(p_value) = '' or trim(p_value) = '0' or trim(p_value) is null then
 

@@ -1,9 +1,13 @@
 /*
-select fn_not_found('U', 1);
-select fn_not_found('D', 2);
+select fn_not_found(2, 1); -- Update
+select fn_not_found(3, 2); -- Delete
 select * from tb_message
 */
-create or replace function fn_not_found(p_action char(1), p_id int)
+create or replace function fn_not_found
+(
+	p_action int, 
+	p_id int
+)
 returns text
 language plpgsql
 as
@@ -11,7 +15,7 @@ $$
 declare
 	v_msg tb_message.message%type default '';
 begin	
-    if p_action in ('U', 'D') then
+    if p_action in (2, 3) then
 
 		select message into v_msg from tb_message where id = 6 limit 1;
 
