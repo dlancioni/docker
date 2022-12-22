@@ -21,11 +21,11 @@ begin
 
 		v_msg = replace(v_msg, '%1', p_id::text);
 
-		if p_action = 'U' then
+		if p_action = 2 then
 			v_msg = replace(v_msg, '%2', 'alteração');
 		end if;
 
-		if p_action = 'D' then
+		if p_action = 3 then
 			v_msg = replace(v_msg, '%2', 'exclusão');
 		end if;
 

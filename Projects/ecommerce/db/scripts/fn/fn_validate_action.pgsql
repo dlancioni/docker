@@ -13,7 +13,7 @@ $$
 declare
 	v_msg text default '';
 begin
-	if upper(p_action) not in (1, 2, 3) then
+	if p_action not in (1, 2, 3) then
 		select message into v_msg from tb_message where id = 1 limit 1;
     end if;
 	return(v_msg);
