@@ -4,7 +4,7 @@ function db_open()
 {
     $server = "db";
     $port = "5432";
-    $db = "ecommerce";
+    $db = "postgres";
     $user = "postgres";
     $pwd = "admin";    
     $conn = pg_connect("host=$server port=$port dbname=$db user=$user password=$pwd");
