@@ -7,14 +7,23 @@ select * from tb_person_classification
 do
 $$
 declare
-	action tp_action default (3, 99, 0, '', 0);
+	action tp_action default (2, 99, 0, '', 0);
 begin
-    -- call sp_tb_person(action, 0, 1, 1, 'Name 1', '2022-12-31');
-	-- call sp_tb_person(action, 1, 1, 1, 'David Lancioni', '1979-02-15');
-	call sp_tb_person(action, 4);
+
+	action = (1, 99, 0, '', 0);
+	-- call sp_tb_person(action, 2, 1, 1, 'David Lancioni', '1979-02-15');
+
+	action = (2, 99, 0, '', 0);
+	-- call sp_tb_person(action, 7, 1, 1, 'David Lancioni', '1979-02-15');	
+
+	action = (3, 99, 0, '', 0);
+	call sp_tb_person(action, 5);	
+
     raise notice 'Output: %', action.message;
 end
 $$;
+
+
 
 */
 
