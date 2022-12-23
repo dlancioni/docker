@@ -1,30 +1,13 @@
 /*
-delete from tb_person
-select * from tb_person
-select * from tb_person_type
-select * from tb_person_classification
-
 do
 $$
 declare
 	action tp_action default (2, 99, 0, '', 0);
 begin
-
-	action = (1, 99, 0, '', 0);
-	-- call sp_tb_person(action, 2, 1, 1, 'David Lancioni', '1979-02-15');
-
-	action = (2, 99, 0, '', 0);
-	-- call sp_tb_person(action, 7, 1, 1, 'David Lancioni', '1979-02-15');	
-
-	action = (3, 99, 0, '', 0);
-	call sp_tb_person(action, 5);	
-
+	call sp_tb_person(action, 2, 1, 1, 'David Lancioni', '1979-02-15');
     raise notice 'Output: %', action.message;
 end
 $$;
-
-
-
 */
 
 create or replace procedure sp_tb_person
@@ -50,8 +33,6 @@ begin
 	p_action.message = '';
 	p_action.last_id = 0;
 
-	raise notice 'parametro % ', p_action.id; 
-
     -- Valid action
     select fn_validate_action(p_action.id) into p_action.message;
 	if p_action.message <> '' then
@@ -65,10 +46,10 @@ begin
 	end if;
 
 	-- Validate fk
-    select count(id) into v_count from tb_person_type where id = p_type_id;
-    select fn_validate_fk(p_action.id, v_count, 'tb_person', 'type_id', 'tb_person_type', 'id') into p_action.message;
+    select count(id) into v_count from tb_person_document where id = p_type_id;
+    select fn_validate_fk(p_action.id, v_count, 'tb_person', 'id', 'tb_person_document', 'person_id') into p_action.message;
 	if p_action.message <> '' then 
-		-- return;
+		return;
 	end if;
 
 	-- Validate if exists on update and delete
@@ -108,10 +89,10 @@ begin
 				type_id = p_type_id,
 				name = p_name,
 				birth = p_birth
-			where id = p_id;           
+			where id = p_id;
         end if;
         
-		-- p_action.last_id = p_id;
+		p_action.last_id = p_id;
         
     elseif p_action.id = 3 then
     
@@ -121,7 +102,7 @@ begin
 			delete from tb_person where id = p_id;
         end if;    
         
-		-- p_action.last_id = p_id;        
+		p_action.last_id = p_id;        
 
     end if;
 

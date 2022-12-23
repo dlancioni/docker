@@ -40,6 +40,15 @@ insert into tb_field (table_id, name, label) values (current_setting('app.id')::
 insert into tb_field (table_id, name, label) values (current_setting('app.id')::int, 'classification_id', 'Classificação de Pessoa');
 insert into tb_field (table_id, name, label) values (current_setting('app.id')::int, 'name', 'Nome');
 insert into tb_field (table_id, name, label) values (current_setting('app.id')::int, 'birth', 'Data de Nascimento');
-
+set app.id = 4;
+insert into tb_table (id, name, label) values (current_setting('app.id')::int, 'tb_document', 'Documentos');
+insert into tb_field (table_id, name, label) values (current_setting('app.id')::int, 'id', 'Id');
+insert into tb_field (table_id, name, label) values (current_setting('app.id')::int, 'name', 'Nome');
+set app.id = 5;
+insert into tb_table (id, name, label) values (current_setting('app.id')::int, 'tb_person_document', 'Pessoas x Documentos');
+insert into tb_field (table_id, name, label) values (current_setting('app.id')::int, 'id', 'Id');
+insert into tb_field (table_id, name, label) values (current_setting('app.id')::int, 'person_id', 'Pessoa');
+insert into tb_field (table_id, name, label) values (current_setting('app.id')::int, 'document_id', 'Documento');
+insert into tb_field (table_id, name, label) values (current_setting('app.id')::int, 'number', 'Numero');
 
 
