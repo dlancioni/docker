@@ -33,22 +33,34 @@ function query($conn, $sql)
 
 function execute($conn, $sql)
 {
-    //$stmt = $conn->prepare($sql);
-    //$stmt->bind_param("is", $id, $output);
-    //$stmt->execute();
+    $statement = "call $sql; select @output as output;";
 
-    $conn->multi_query( "CALL sp_test(1, @output);select @output as output" );
-    $conn->next_result();
-    $rs=$conn->store_result();
-    echo $rs->fetch_object()->output, "\n";
-    $rs->free();
+    $conn->multi_query( $statement );
 
+    do 
+    {
+
+      if ($result = $conn->store_result()) 
+      {
+          while ($row = $result->fetch_row()) 
+          {
+              printf("%s\n", $row[0]);
+          }
+      }
+
+      if ($conn->more_results()) 
+      {
+          printf("-----------------<br>");
+      }
+
+  } while ($conn->next_result());
+  
 
 }
 
 $conn = connect();
 // query($conn, "select * from tb_person_type");
-execute($conn, "CALL sp_test(?, ?)");
+execute($conn, "sp_test(1, @output)");
 $conn->close();
 
 ?>
