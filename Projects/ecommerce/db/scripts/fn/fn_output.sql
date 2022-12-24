@@ -1,9 +1,10 @@
 /*
-select fn_output(1);
+select fn_output(1, 'Test', 99);
  */
 use ecommerce;
 
 delimiter $$
+drop function if exists fn_output;
 create function fn_output
 (
 	p_status int,

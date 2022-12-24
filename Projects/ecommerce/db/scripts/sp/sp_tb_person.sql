@@ -38,14 +38,14 @@ sp: begin
     -- Valid action
     select fn_validate_action(p_action) into v_msg;
 	if v_msg <> '' then 
-		select fn_output(v_status, v_msg, v_id) into p_output;
+		call sp_output(v_status, v_msg, v_id);
 		leave sp; 
 	end if;
 
     -- Mandatory fields
     select fn_validate_mandatory(p_action, p_name, 'tb_person', 'name') into v_msg;
 	if v_msg <> '' then 
-        select fn_output(v_status, v_msg, v_id) into p_output;
+        call sp_output(v_status, v_msg, v_id);
 		leave sp; 
 	end if;
 
@@ -53,7 +53,7 @@ sp: begin
     select count(id) into v_count from tb_person_type where id = p_type_id;
     select fn_validate_fk(p_action, v_count, 'tb_person', 'type_id', 'tb_person_type', 'id') into v_msg;
 	if v_msg <> '' then 
-		select fn_output(v_status, v_msg, v_id) into p_output;
+		call sp_output(v_status, v_msg, v_id);
 		leave sp;
 	end if;
 
@@ -62,7 +62,7 @@ sp: begin
 		select count(id) into v_count from tb_person where id = p_id;
 		if v_count = 0 then
 			select fn_not_found(p_action, p_id) into v_msg;
-            select fn_output(v_status, v_msg, v_id) into p_output;
+            call sp_output(v_status, v_msg, v_id);
 			leave sp;
 		end if;	
 	end if;    
@@ -119,6 +119,6 @@ sp: begin
 	set v_status = 1;
     
     -- Return
-	select fn_output(v_status, v_msg, v_id) into p_output;
+	call sp_output(v_status, v_msg, v_id);
 end
 $$

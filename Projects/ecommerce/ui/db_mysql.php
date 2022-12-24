@@ -1,6 +1,6 @@
 <?php
 
-function connect()
+function db_open()
 {
     $servername = "db";
     $username = "root";
@@ -17,50 +17,33 @@ function connect()
     return $conn;
 }
 
-function query($conn, $sql)
+function db_close($conn)
 {
-    $result = $conn->query($sql);
+    $conn->close();
+}    
 
-    if ($result->num_rows > 0) 
+function db_execute($conn, $sql)
+{
+    return $conn->query($sql);
+}
+
+
+function test($conn, $sql)
+{
+    $result = db_execute($conn, $sql);
+
+    if ($result->num_rows > 0)
     {
-        while($row = $result->fetch_assoc()) 
+        while( $row = $result->fetch_assoc() )
         {
-            echo "id: " . $row["id"]. " - Ds: " . $row["ds"] . "<br>";
+            echo " Status: " . $row["status"] . "<br> Message: " . $row["message"] . "<br> Id: " . $row["id"];
         }
     }
-    
 }
 
-function execute($conn, $sql)
-{
-    $statement = "call $sql; select @output as output;";
-
-    $conn->multi_query( $statement );
-
-    do 
-    {
-
-      if ($result = $conn->store_result()) 
-      {
-          while ($row = $result->fetch_row()) 
-          {
-              printf("%s\n", $row[0]);
-          }
-      }
-
-      if ($conn->more_results()) 
-      {
-          printf("-----------------<br>");
-      }
-
-  } while ($conn->next_result());
-  
-
-}
-
-$conn = connect();
-// query($conn, "select * from tb_person_type");
-execute($conn, "sp_test(1, @output)");
-$conn->close();
+$conn = db_open();
+//test($conn, "call sp_test(1)");
+test($conn, "select 1 status, 'Ola' message, 99 id");
+db_close($conn);
 
 ?>
