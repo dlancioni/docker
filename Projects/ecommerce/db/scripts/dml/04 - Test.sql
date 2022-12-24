@@ -1,8 +1,4 @@
-/*
-select * from tb_person
-select * from tb_person_type
-select * from tb_person_classification
-*/
+use ecommerce;
 
 delete from tb_person;
 delete from tb_document;

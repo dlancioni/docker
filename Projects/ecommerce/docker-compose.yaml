@@ -1,9 +1,8 @@
 version: '3'
-
 services:
   php:
       build: .
-      container_name: php
+      container_name: php7
       ports:
         - '80:80'
       volumes:
@@ -13,12 +12,16 @@ services:
       links:
         - db  
   db:
-    image: postgres
+    container_name: mysql8      
+    image: mysql:latest
+    ports: 
+      - "3306:3306"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=postgres
-    ports:
-      - "5432:5432"      
-
-    container_name: postgres15
+      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_USER=david
+      - MYSQL_PASSWORD=david
+      - MYSQL_DATABASE=ecommerce
+    volumes:
+      - type: bind
+        source: /c/temp/mysql/mysql8
+        target: /var/lib/mysql/
