@@ -7,4 +7,9 @@ services:
     environment:
       - MSSQL_SA_PASSWORD=David@Mssql1
       - ACCEPT_EULA=Y
+      - MSSQL_AGENT_ENABLED = 1
+    volumes:
+      - type: bind
+        source: /c/temp/mssql22/data/
+        target: /var/opt/mssql/data/
     container_name: mssql22
